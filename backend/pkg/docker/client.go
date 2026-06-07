@@ -59,7 +59,8 @@ type dockerClient struct {
 	dataDir  string
 	hostDir  string
 	client   *client.Client
-	inside   bool
+	inside        bool
+	socketReadonly bool
 	defImage string
 	socket   string
 	network  string
@@ -160,7 +161,8 @@ func NewDockerClient(ctx context.Context, db database.Querier, cfg *config.Confi
 		dataDir:  dataDir,
 		hostDir:  hostDir,
 		logger:   logger,
-		inside:   inside,
+		inside:        inside,
+		socketReadonly: socketReadonly,
 		defImage: defImage,
 		socket:   socket,
 		network:  netName,
@@ -282,9 +284,10 @@ func (dc *dockerClient) RunContainer(
 
 	if dc.inside {
 		if dc.socketReadonly {
-		hostConfig.Binds = append(hostConfig.Binds, fmt.Sprintf("%s:%s:ro", dc.socket, defaultDockerSocketPath))
-	} else {
-		hostConfig.Binds = append(hostConfig.Binds, fmt.Sprintf("%s:%s", dc.socket, defaultDockerSocketPath))
+			hostConfig.Binds = append(hostConfig.Binds, fmt.Sprintf("%s:%s:ro", dc.socket, defaultDockerSocketPath))
+		} else {
+			hostConfig.Binds = append(hostConfig.Binds, fmt.Sprintf("%s:%s", dc.socket, defaultDockerSocketPath))
+		}
 	}
 	}
 
