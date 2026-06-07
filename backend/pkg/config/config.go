@@ -29,6 +29,7 @@ type Config struct {
 
 	// === Container Runtime Configuration ===
 	DockerInside                 bool   `env:"DOCKER_INSIDE" envDefault:"false"`
+	DockerSocketReadonly         bool   `env:"DOCKER_SOCKET_READONLY" envDefault:"true"`
 	DockerNetAdmin               bool   `env:"DOCKER_NET_ADMIN" envDefault:"false"`
 	DockerSocket                 string `env:"DOCKER_SOCKET"`
 	DockerNetwork                string `env:"DOCKER_NETWORK"`
