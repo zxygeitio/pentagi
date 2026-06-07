@@ -111,6 +111,7 @@ func NewDockerClient(ctx context.Context, db database.Querier, cfg *config.Confi
 		socket = getHostDockerSocket(ctx, cli)
 	}
 	inside := cfg.DockerInside
+	socketReadonly := cfg.DockerSocketReadonly
 	netName := cfg.DockerNetwork
 	publicIP := cfg.DockerPublicIP
 	defImage := strings.ToLower(cfg.DockerDefaultImage)
@@ -280,7 +281,11 @@ func (dc *dockerClient) RunContainer(
 	hostConfig.Binds = append(hostConfig.Binds, fmt.Sprintf("%s:%s", hostDir, WorkFolderPathInContainer))
 
 	if dc.inside {
+		if dc.socketReadonly {
+		hostConfig.Binds = append(hostConfig.Binds, fmt.Sprintf("%s:%s:ro", dc.socket, defaultDockerSocketPath))
+	} else {
 		hostConfig.Binds = append(hostConfig.Binds, fmt.Sprintf("%s:%s", dc.socket, defaultDockerSocketPath))
+	}
 	}
 
 	hostConfig.LogConfig = container.LogConfig{
